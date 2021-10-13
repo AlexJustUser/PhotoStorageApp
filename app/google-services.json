@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "645006125022",
+    "firebase_url": "https://figma-2b83d-default-rtdb.firebaseio.com",
+    "project_id": "figma-2b83d",
+    "storage_bucket": "figma-2b83d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645006125022:android:21b26c8455b52c6dec1f4f",
+        "android_client_info": {
+          "package_name": "com.maveri.figma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645006125022-tu220astdid4j26b3mhgbtorf760h7rv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFoaiFcye-Ly28bq_okEOb6j9fU_oBVlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645006125022-tu220astdid4j26b3mhgbtorf760h7rv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
