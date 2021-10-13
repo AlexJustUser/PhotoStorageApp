@@ -24,7 +24,7 @@
             <ImageButton
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/button_roundcorner"
+                android:background="@drawable/button_image_roundcorner"
                 android:layout_marginRight="7dp"
                 android:layout_marginTop="7dp"
                 android:visibility="gone"

@@ -3,10 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-v24/button_roundcorner.xml" value="0.3507692307692308" />
+        <entry key="app/src/main/res/drawable/button_roundcorner.xml" value="0.36615384615384616" />
         <entry key="app/src/main/res/drawable/ic_cross.xml" value="0.36615384615384616" />
+        <entry key="app/src/main/res/drawable/ic_paint.xml" value="0.36615384615384616" />
         <entry key="app/src/main/res/drawable/ic_plus.xml" value="0.5" />
+        <entry key="app/src/main/res/drawable/layout_item_roundcorner.xml" value="0.36615384615384616" />
+        <entry key="app/src/main/res/drawable/layout_item_roundcorner_shadow.xml" value="0.36615384615384616" />
         <entry key="app/src/main/res/drawable/layout_roundcorner.xml" value="0.36615384615384616" />
-        <entry key="app/src/main/res/layout/location_item.xml" value="0.3382761816496756" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/location_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/photo_location_item.xml" value="0.67" />
       </map>
     </option>

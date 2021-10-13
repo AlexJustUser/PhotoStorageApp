@@ -6,6 +6,7 @@
     <dimen name="margin_25">25dp</dimen>
     <dimen name="margin_32">32dp</dimen>
     <dimen name="margin_50">50dp</dimen>
+    <dimen name="margin_100">100dp</dimen>
 
     <dimen name="padding_2">2dp</dimen>
     <dimen name="padding_5">5dp</dimen>
