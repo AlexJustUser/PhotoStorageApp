@@ -2,10 +2,8 @@ package com.maveri.figma.repository;
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ServerValue
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.maveri.figma.main.viewmodel.MainViewModel.Companion.TAG
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -16,6 +14,9 @@ class FirebaseRepository @Inject constructor(
     private val firebaseAuth:FirebaseAuth
 ) {
 
+    companion object {
+        const val TAG = "FirebaseRepository"
+    }
 
     private val documentsName = arrayOf("StreetName", "LocationsName", "PhotosName")
 
