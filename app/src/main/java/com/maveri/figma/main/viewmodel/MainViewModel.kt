@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.maveri.figma.model.Location
 import com.maveri.figma.model.User
 import com.maveri.figma.repository.FirebaseRepository
 import com.maveri.figma.repository.RoomRepository
@@ -43,6 +44,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                 setStreetInfo()
             }else{
                 getStreetName(users[0].firebaseId)
+                getLocationsInfo(users[0].firebaseId)
             }
         }
     }
@@ -64,16 +66,24 @@ class MainViewModel @Inject constructor(application: Application, private val fi
     }
 
     private fun getPhotosInfo(userId: String, locations: Map<String, Any>){
-        var locationItems: MutableList<String>(locations.)
+        val locationItems = mutableListOf<Location>()
+
         firebaseRepository.getPhotosInfo(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : DisposableSingleObserver<Map<String, Any>>() {
 
                 override fun onSuccess(photos: Map<String, Any>) {
-                    locations.forEach{
-
+                    locations.forEach{ loc->
+                        val photoUrls = mutableListOf<String>()
+                        photos.forEach {
+                            if((it.value as? Array<*>)?.contains(loc.key) == true){
+                                photoUrls?.add(it.key)
+                            }
+                        }
+                        locationItems?.add(Location(loc.key, loc.value.toString(), photoUrls))
                     }
+                    viewState.value = MainViewState.State(locations = locationItems)
                 }
 
                 override fun onError(e: Throwable) {
