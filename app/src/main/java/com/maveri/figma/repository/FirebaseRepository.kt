@@ -58,7 +58,7 @@ class FirebaseRepository @Inject constructor(
                 val userId = FieldValue.serverTimestamp().toString()
                 firebaseFirestore.runBatch { batch ->
                     batch.set(  firebaseFirestore.collection(userId).document(documentsName[0]), hashMapOf("name" to "Улицы"))
-                    batch.set(  firebaseFirestore.collection(userId).document(documentsName[1]), HashMap<String, String>())
+                    batch.set(  firebaseFirestore.collection(userId).document(documentsName[1]), hashMapOf("1" to "Название локации"))
                     batch.set(  firebaseFirestore.collection(userId).document(documentsName[2]), HashMap<String, String>())
 
                 }.addOnCompleteListener {

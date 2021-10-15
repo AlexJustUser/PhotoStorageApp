@@ -6,7 +6,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.maveri.figma.model.User
-import com.maveri.figma.model.UserDatabase
 import com.maveri.figma.repository.FirebaseRepository
 import com.maveri.figma.repository.RoomRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,10 +28,6 @@ class MainViewModel @Inject constructor(application: Application, private val fi
         const val TAG = "MainViewModel"
     }
 
-    init {
-        //val userDao = UserDatabase.getDatabase(application).userDao()
-
-    }
 
     fun saveUserId(user: User){
         viewModelScope.launch(Dispatchers.IO) {
@@ -42,7 +37,9 @@ class MainViewModel @Inject constructor(application: Application, private val fi
 
     fun checkAuth() {
         viewModelScope.launch(Dispatchers.IO) {
-            if(roomRepository.readAllUsers().isEmpty()){
+            //roomRepository.delUsers()
+            val users: List<User> = roomRepository.readAllUsers()
+            if(users.isEmpty()){
                 setStreetInfo()
             }
         }

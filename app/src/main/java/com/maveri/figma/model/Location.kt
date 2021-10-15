@@ -2,6 +2,8 @@ package com.maveri.figma.model;
 
 data class Location(
 
-    val information: HashMap<Int, String>
+    val id: String,
+    val name: String,
+    val photos: HashMap<String, String>
 
 )

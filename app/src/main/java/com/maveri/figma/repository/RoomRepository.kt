@@ -16,4 +16,8 @@ class RoomRepository @Inject constructor(private val userDao: UserDao) {
         userDao.addUser(user)
     }
 
+    fun delUsers(){
+        userDao.deleteAllUsers()
+    }
+
 }
