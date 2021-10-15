@@ -8,7 +8,9 @@ import javax.inject.Inject
 
 class RoomRepository @Inject constructor(private val userDao: UserDao) {
 
-val readAllUsers: MutableLiveData<List<User>> = userDao.readAllUsers()
+    suspend fun readAllUsers(): List<User>{
+        return userDao.readAllUsers()
+    }
 
     suspend fun addUser(user: User){
         userDao.addUser(user)

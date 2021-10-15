@@ -24,20 +24,27 @@ class MainViewModel @Inject constructor(application: Application, private val fi
     AndroidViewModel(application) {
 
     private val viewState: MutableLiveData<MainViewState.State> = MutableLiveData()
-    private val readAllData: MutableLiveData<List<User>>
 
     companion object {
         const val TAG = "MainViewModel"
     }
 
     init {
-        val userDao = UserDatabase.getDatabase(application).userDao()
-        readAllData = roomRepository.readAllUsers
+        //val userDao = UserDatabase.getDatabase(application).userDao()
+
     }
 
     fun saveUserId(user: User){
         viewModelScope.launch(Dispatchers.IO) {
             roomRepository.addUser(user)
+        }
+    }
+
+    fun checkAuth() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if(roomRepository.readAllUsers().isEmpty()){
+                setStreetInfo()
+            }
         }
     }
 
@@ -66,8 +73,8 @@ class MainViewModel @Inject constructor(application: Application, private val fi
             .subscribe(object : DisposableSingleObserver<String>() {
 
                 override fun onSuccess(userId: String) {
-
-                    //saveUserId(user)
+                    val user: User = User(0, userId)
+                    saveUserId(user)
                 }
 
                 override fun onError(e: Throwable) {

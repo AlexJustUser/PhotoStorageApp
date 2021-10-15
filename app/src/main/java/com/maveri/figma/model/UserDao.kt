@@ -1,6 +1,5 @@
 package com.maveri.figma.model
 
-import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 
 @Dao
@@ -10,5 +9,5 @@ interface UserDao {
     suspend fun addUser(user: User)
 
     @Query("SELECT * FROM user_table ORDER BY id ASC" )
-    fun readAllUsers() : MutableLiveData<List<User>>
+    fun readAllUsers() : List<User>
 }
