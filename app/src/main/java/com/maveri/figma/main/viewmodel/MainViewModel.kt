@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(application: Application, private val firebaseRepository: FirebaseRepository, private val roomRepository: RoomRepository) :
     AndroidViewModel(application) {
 
-    private val viewState: MutableLiveData<MainViewState.State> = MutableLiveData()
+    val viewState: MutableLiveData<MainViewState.State> = MutableLiveData()
 
     companion object {
         const val TAG = "MainViewModel"
@@ -41,8 +41,61 @@ class MainViewModel @Inject constructor(application: Application, private val fi
             val users: List<User> = roomRepository.readAllUsers()
             if(users.isEmpty()){
                 setStreetInfo()
+            }else{
+                getStreetName(users[0].firebaseId)
             }
         }
+    }
+
+    private fun getLocationsInfo(userId: String){
+        firebaseRepository.getLocationsInfo(userId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : DisposableSingleObserver<Map<String, Any>>() {
+
+                override fun onSuccess(locations: Map<String, Any>) {
+                    getPhotosInfo(userId, locations)
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.e(TAG, e.stackTraceToString())
+                }
+            })
+    }
+
+    private fun getPhotosInfo(userId: String, locations: Map<String, Any>){
+        var locationItems: MutableList<String>(locations.)
+        firebaseRepository.getPhotosInfo(userId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : DisposableSingleObserver<Map<String, Any>>() {
+
+                override fun onSuccess(photos: Map<String, Any>) {
+                    locations.forEach{
+
+                    }
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.e(TAG, e.stackTraceToString())
+                }
+            })
+    }
+
+    private fun getStreetName(userId: String) {
+            firebaseRepository.getStreetName(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableSingleObserver<String>() {
+
+                    override fun onSuccess(streetName: String) {
+                        viewState.value = MainViewState.State(streetName = streetName)
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.e(TAG, e.stackTraceToString())
+                    }
+                })
     }
 
     fun signInAnonymously() {
@@ -63,7 +116,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
             })
     }
 
-    fun setStreetInfo(){
+    private fun setStreetInfo(){
         firebaseRepository.setStreetInfo()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -80,19 +133,22 @@ class MainViewModel @Inject constructor(application: Application, private val fi
             })
     }
 
-    fun sendStreetName(name: String, userId: String) {
-        firebaseRepository.updateStreetName(name, userId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : DisposableCompletableObserver() {
-                override fun onComplete() {
-                    Log.d(TAG, "DocumentSnapshot successfully updated!")
-                }
+    fun updateStreetName(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = roomRepository.readAllUsers()[0].firebaseId
+            firebaseRepository.updateStreetName(name, userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableCompletableObserver() {
+                    override fun onComplete() {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!")
+                    }
 
-                override fun onError(e: Throwable) {
-                    Log.e(TAG, e.stackTraceToString())
-                }
+                    override fun onError(e: Throwable) {
+                        Log.e(TAG, e.stackTraceToString())
+                    }
 
-            })
+                })
+        }
     }
 }

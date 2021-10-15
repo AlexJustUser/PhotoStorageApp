@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.maveri.figma.model.Location
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -68,6 +69,70 @@ class FirebaseRepository @Inject constructor(
                     .addOnFailureListener{
                         e -> Log.w(TAG, "Error updating document", e)
                         emitter.onError(e)
+                    }
+            }
+        }
+    }
+
+    fun getLocationsInfo(userId: String) : Single<Map<String, Any>>{
+        return Single.create{ emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[1])
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            emitter.onSuccess(document.data)
+                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, "get failed with ", exception)
+                        emitter.onError(exception)
+                    }
+            }
+        }
+    }
+
+    fun getPhotosInfo(userId: String) : Single<Map<String, Any>>{
+        return Single.create{ emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[2])
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            emitter.onSuccess(document.data)
+                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, "get failed with ", exception)
+                        emitter.onError(exception)
+                    }
+            }
+        }
+    }
+
+    fun getStreetName(userId: String) : Single<String>{
+        return Single.create{ emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[0])
+                .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            emitter.onSuccess(document.getString("name"))
+                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                        } else {
+                            emitter.onSuccess("Error")
+                            Log.d(TAG, "No such document")
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, "get failed with ", exception)
+                        emitter.onError(exception)
                     }
             }
         }
