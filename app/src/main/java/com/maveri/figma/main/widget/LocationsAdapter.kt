@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.maveri.figma.model.Location
 
-class LocationsAdapter : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
+class LocationsAdapter(val itemClick: (String) -> Unit) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
         return LocationViewHolder(LocationItemView(parent.context))
@@ -13,7 +13,7 @@ class LocationsAdapter : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK
     }
 
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
-        (holder.itemView as? LocationItemView)?.setItem(getItem(position))
+        (holder.itemView as? LocationItemView)?.setItem(getItem(position), itemClick)
     }
 
     companion object {

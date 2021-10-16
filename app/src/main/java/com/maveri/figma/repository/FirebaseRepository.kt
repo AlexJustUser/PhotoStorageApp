@@ -74,6 +74,31 @@ class FirebaseRepository @Inject constructor(
         }
     }
 
+    fun addNewLocation(userId: String) : Completable {
+        return Completable.create{ emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[1])
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            firebaseFirestore.collection(userId).document(documentsName[1]).update((document.data?.size?.plus(1)).toString(), "Название локации")
+
+                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                }.addOnCompleteListener {
+                    Log.d(TAG, "DocumentSnapshot successfully created!")
+                    emitter.onComplete()
+                }
+                    .addOnFailureListener{
+                            e -> Log.w(TAG, "Error updating document", e)
+                        emitter.onError(e)
+                    }
+            }
+        }
+    }
+
     fun getLocationsInfo(userId: String) : Single<Map<String, Any>>{
         return Single.create{ emitter ->
             firebaseAuth.currentUser?.let {
@@ -134,6 +159,28 @@ class FirebaseRepository @Inject constructor(
                         Log.d(TAG, "get failed with ", exception)
                         emitter.onError(exception)
                     }
+            }
+        }
+    }
+
+    fun checkUpdateLocations(userId: String) : Completable{
+        return Completable.create { emitter ->
+            firebaseFirestore.collection(userId).document(documentsName[1]).addSnapshotListener{snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e)
+                    emitter.onComplete()
+                }
+            }
+        }
+    }
+
+    fun checkUpdatePhotos(userId: String) : Completable{
+        return Completable.create { emitter ->
+            firebaseFirestore.collection(userId).document(documentsName[2]).addSnapshotListener{snapshots, e ->
+                if (e != null) {
+                    Log.w(TAG, "listen:error", e)
+                    emitter.onComplete()
+                }
             }
         }
     }
