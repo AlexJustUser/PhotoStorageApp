@@ -181,6 +181,24 @@ class MainViewModel @Inject constructor(application: Application, private val fi
         }
     }
 
+    fun updateLocationName(locationInfo: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = roomRepository.readAllUsers()[0].firebaseId
+            firebaseRepository.updateLocationName(locationInfo, userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableCompletableObserver() {
+                    override fun onComplete() {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.e(TAG, e.stackTraceToString())
+                    }
+
+                })
+        }
+    }
 
     fun updateInfo() {
         viewModelScope.launch(Dispatchers.IO) {

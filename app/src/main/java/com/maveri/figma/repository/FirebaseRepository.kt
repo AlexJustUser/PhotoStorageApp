@@ -53,6 +53,26 @@ class FirebaseRepository @Inject constructor(
         }
     }
 
+    fun updateLocationName(locationInfo: String, userId: String): Completable {
+        return Completable.create { emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[0]).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            val locInf = locationInfo.split("*").toTypedArray()
+                            firebaseFirestore.collection(userId).document(documentsName[1]).update(locInf[0], locInf[1])
+                                .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully updated!") }
+                                .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+                            emitter.onComplete()
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, "get failed with ", exception)
+                    }
+            }
+        }
+    }
+
     fun setStreetInfo() : Single<String> {
         return Single.create{ emitter ->
             firebaseAuth.currentUser?.let {
@@ -163,13 +183,16 @@ class FirebaseRepository @Inject constructor(
         }
     }
 
+
+
+
     fun checkUpdateLocations(userId: String) : Completable{
         return Completable.create { emitter ->
             firebaseFirestore.collection(userId).document(documentsName[1]).addSnapshotListener{snapshots, e ->
                 if (e != null) {
                     Log.w(TAG, "listen:error", e)
-                    emitter.onComplete()
                 }
+                emitter.onComplete()
             }
         }
     }
@@ -179,8 +202,8 @@ class FirebaseRepository @Inject constructor(
             firebaseFirestore.collection(userId).document(documentsName[2]).addSnapshotListener{snapshots, e ->
                 if (e != null) {
                     Log.w(TAG, "listen:error", e)
-                    emitter.onComplete()
                 }
+                emitter.onComplete()
             }
         }
     }

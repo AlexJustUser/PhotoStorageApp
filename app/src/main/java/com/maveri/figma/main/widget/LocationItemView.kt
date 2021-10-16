@@ -20,11 +20,11 @@ class LocationItemView
         layoutParams = binding.root.layoutParams
     }
 
-    fun setItem(item: Location, position: (String) -> Unit) {
+    fun setItem(item: Location, updateInfo: (String) -> Unit) {
         binding.locationName.setText(item.name)
         binding.locationName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                position(item.id)
+                updateInfo(item.id.plus("*").plus(binding.locationName.text))
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.maveri.figma.model.Location
 
-class LocationsAdapter(val itemClick: (String) -> Unit) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
+class LocationsAdapter(private val itemClick: (String) -> Unit) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
         return LocationViewHolder(LocationItemView(parent.context))
