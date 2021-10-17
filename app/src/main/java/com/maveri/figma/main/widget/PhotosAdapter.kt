@@ -7,13 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
-import androidx.core.content.ContextCompat.startActivity
 import com.maveri.figma.R
 import com.squareup.picasso.Picasso
 
 class PhotosAdapter constructor(private val context: Context, private val images: MutableList<String>?) :  BaseAdapter() {
 
-    private var isImageFitToScreen: Boolean = false
+    private var isDeleting: Boolean = false
 
     override fun getCount(): Int {
         return images!!.size
@@ -36,12 +35,24 @@ class PhotosAdapter constructor(private val context: Context, private val images
         }
 
         val card = view!!.findViewById<ImageView>(R.id.photo_card)
+        val deletePhotoButton = view!!.findViewById<ImageView>(R.id.delete_photo_button)
 
 
         card.setOnClickListener {
             val intent = Intent(parent?.context, FullscreenImageActivity::class.java)
             intent.putExtra("imageUrl", images?.get(position))
             parent?.context?.startActivity(intent)
+
+//            view.visibility = if (view.visibility == View.VISIBLE){
+//                View.INVISIBLE
+//            } else{
+//                View.VISIBLE
+//            }
+        }
+
+        card.setOnLongClickListener{
+            deletePhotoButton.visibility = View.VISIBLE
+            true
         }
 
             Picasso.with(context)

@@ -14,8 +14,7 @@ class WrapGridView : GridView {
     )
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val heightSpec: Int
-        heightSpec = if (layoutParams.height == LayoutParams.WRAP_CONTENT) {
+        val heightSpec: Int = if (layoutParams.height == LayoutParams.WRAP_CONTENT) {
             MeasureSpec.makeMeasureSpec(Int.MAX_VALUE shr 2, MeasureSpec.AT_MOST)
         } else {
             heightMeasureSpec
