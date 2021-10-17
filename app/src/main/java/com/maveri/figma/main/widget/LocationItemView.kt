@@ -1,6 +1,8 @@
 package com.maveri.figma.main.widget
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -20,11 +22,14 @@ class LocationItemView
         layoutParams = binding.root.layoutParams
     }
 
-    fun setItem(item: Location, updateInfo: (String) -> Unit) {
+    fun setItem(item: Location, position: Int, locationsAdapter: LocationsAdapter) {
         binding.locationName.setText(item.name)
         binding.locationName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                updateInfo(item.id.plus("*").plus(binding.locationName.text))
+                val list = arrayListOf<String>()
+                list.add(item.id)
+                list.add(binding.locationName.text.toString())
+                locationsAdapter.notifyItemChanged(position, list)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -34,8 +39,10 @@ class LocationItemView
             }
         })
         binding.addPhotoButton.setOnClickListener{
-
+            val list = arrayListOf<String>()
+            list.add(item.id)
+            locationsAdapter.notifyItemChanged(position, list)
+            }
         }
-    }
-
 }
+

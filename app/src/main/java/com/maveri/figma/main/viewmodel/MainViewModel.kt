@@ -29,6 +29,23 @@ class MainViewModel @Inject constructor(application: Application, private val fi
         const val TAG = "MainViewModel"
     }
 
+    fun signInAnonymously() {
+        firebaseRepository.signInAnonymously()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : DisposableCompletableObserver() {
+                override fun onComplete() {
+                    viewState.value =
+                        MainViewState.State(authStatus = MainViewState.AuthFirebaseStatus.Success)
+                }
+
+                override fun onError(e: Throwable?) {
+                    viewState.value =
+                        MainViewState.State(authStatus = MainViewState.AuthFirebaseStatus.Error)
+                }
+
+            })
+    }
 
     fun saveUserId(user: User){
         viewModelScope.launch(Dispatchers.IO) {
@@ -108,24 +125,6 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                 })
     }
 
-    fun signInAnonymously() {
-        firebaseRepository.signInAnonymously()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : DisposableCompletableObserver() {
-                override fun onComplete() {
-                    viewState.value =
-                        MainViewState.State(authStatus = MainViewState.AuthFirebaseStatus.Success)
-                }
-
-                override fun onError(e: Throwable?) {
-                    viewState.value =
-                        MainViewState.State(authStatus = MainViewState.AuthFirebaseStatus.Error)
-                }
-
-            })
-    }
-
     private fun setStreetInfo(){
         firebaseRepository.setStreetInfo()
             .subscribeOn(Schedulers.io())
@@ -162,6 +161,25 @@ class MainViewModel @Inject constructor(application: Application, private val fi
         }
     }
 
+    fun updateLocationName(id: String,name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = roomRepository.readAllUsers()[0].firebaseId
+            firebaseRepository.updateLocationName(id, name, userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableCompletableObserver() {
+                    override fun onComplete() {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.e(TAG, e.stackTraceToString())
+                    }
+
+                })
+        }
+    }
+
     fun addNewLocation() {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = roomRepository.readAllUsers()[0].firebaseId
@@ -171,57 +189,6 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                 .subscribe(object : DisposableCompletableObserver() {
                     override fun onComplete() {
                         Log.d(TAG, "DocumentSnapshot successfully updated!")
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.e(TAG, e.stackTraceToString())
-                    }
-
-                })
-        }
-    }
-
-    fun updateLocationName(locationInfo: String){
-        viewModelScope.launch(Dispatchers.IO) {
-            val userId = roomRepository.readAllUsers()[0].firebaseId
-            firebaseRepository.updateLocationName(locationInfo, userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : DisposableCompletableObserver() {
-                    override fun onComplete() {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!")
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.e(TAG, e.stackTraceToString())
-                    }
-
-                })
-        }
-    }
-
-    fun updateInfo() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val userId = roomRepository.readAllUsers()[0].firebaseId
-            firebaseRepository.checkUpdateLocations(userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object :DisposableCompletableObserver() {
-                    override fun onComplete() {
-                        getLocationsInfo(userId)
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.e(TAG, e.stackTraceToString())
-                    }
-
-                })
-            firebaseRepository.checkUpdatePhotos(userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object :DisposableCompletableObserver() {
-                    override fun onComplete() {
-                        getLocationsInfo(userId)
                     }
 
                     override fun onError(e: Throwable) {

@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.maveri.figma.model.Location
 
-class LocationsAdapter(private val itemClick: (String) -> Unit) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
+class LocationsAdapter constructor(locationView: LocationView) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
+
+    private val locationView: LocationView? = locationView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
         return LocationViewHolder(LocationItemView(parent.context))
@@ -13,7 +15,21 @@ class LocationsAdapter(private val itemClick: (String) -> Unit) : ListAdapter<Lo
     }
 
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
-        (holder.itemView as? LocationItemView)?.setItem(getItem(position), itemClick)
+        (holder.itemView as? LocationItemView)?.setItem(getItem(position), position, this)
+    }
+
+    override fun onBindViewHolder(holder: LocationViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()){
+            super.onBindViewHolder(holder, position, payloads)
+        }else{
+            payloads.let {
+                if((it[0] as ArrayList<String>).size==2){
+                    locationView?.updateLocationName(it[0] as ArrayList<String>)
+                }else{
+                    locationView?.updateLocationPhoto(it[0] as ArrayList<String>)
+                }
+            }
+        }
     }
 
     companion object {
@@ -25,5 +41,10 @@ class LocationsAdapter(private val itemClick: (String) -> Unit) : ListAdapter<Lo
             override fun areContentsTheSame(oldItem: Location, newItem: Location) =
                 oldItem.id == newItem.id
         }
+    }
+
+    interface LocationView{
+        fun updateLocationName(locationInfo: ArrayList<String>)
+        fun updateLocationPhoto(locationInfo: ArrayList<String>)
     }
 }

@@ -4,8 +4,8 @@
     <solid android:color="#FFFFFF" />
 
     <corners
-        android:bottomLeftRadius="10dip"
-        android:bottomRightRadius="10dip"
+        android:bottomLeftRadius="0dip"
+        android:bottomRightRadius="0dip"
         android:topLeftRadius="0dip"
         android:topRightRadius="0dip"/>
 
@@ -18,8 +18,8 @@
     <gradient
         android:angle="90"
         android:endColor="@color/shadow"
-        android:centerColor="@color/white"
+        android:centerColor="@color/shadow"
         android:startColor="@color/white"
-        android:centerX="0.9" />
+        android:centerX="1.5" />
 
 </shape>
