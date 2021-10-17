@@ -1,16 +1,19 @@
 package com.maveri.figma.main.widget
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.annotation.GlideModule
+import com.maveri.figma.R
+import com.maveri.figma.repository.FirebaseRepository
+import com.squareup.picasso.Picasso
 
 class PhotosAdapter constructor(private val context: Context, private val images: MutableList<String>?) :  BaseAdapter() {
-
-
-
     override fun getCount(): Int {
         return images!!.size
     }
@@ -26,9 +29,21 @@ class PhotosAdapter constructor(private val context: Context, private val images
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var view = convertView
 
-        //view = images?.get(position)?.let { it -> PhotoItemView(context).setItem(it, position, this) }
+        if(view == null) {
+            val layoutInflater = LayoutInflater.from(context)
+            view = layoutInflater.inflate(R.layout.photo_location_item, parent, false)
+        }
 
+        val card = view!!.findViewById<ImageView>(R.id.photo_card)
 
+//        Glide.with(context)
+//            .load(images?.get(position))
+//            .into(card)
+
+            Picasso.with(context)
+                .load(images?.get(position))
+                .into(card)
+        //card.setBackgroundColor(2)
 
         return view
     }

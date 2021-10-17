@@ -117,49 +117,56 @@ class FirebaseRepository @Inject constructor(
     }
 
     fun addNewPhoto(userId: String, photoId: Uri, locationId: String): Completable {
+        var downloadUrl = ""
         return Completable.create { emitter ->
             firebaseAuth.currentUser?.let {
                 firebaseStorage.reference.child(photoId.toString().replace("/", ""))
                     .putFile(photoId)
+                firebaseStorage.reference.child(photoId.toString().replace("/", "")).downloadUrl
                     .addOnCompleteListener {
                         Log.d(TAG, "DocumentSnapshot successfully created!")
+                        downloadUrl = it.result.toString()
+                        firebaseFirestore.collection(userId).document(documentsName[1])
+                            .collection(documentsName[2])
+                            .get()
+                            .addOnSuccessListener { collection ->
+                                if (collection.documents[locationId.toInt() - 1].data != null) {
+                                    firebaseFirestore.collection(userId).document(documentsName[1])
+                                        .collection(documentsName[2]).document(locationId)
+                                        .update(
+                                            collection.documents[locationId.toInt() - 1].data?.size?.plus(1)
+                                                .toString(),
+                                            photoId.toString().replace("/", "")
+                                                .plus("*")
+                                                .plus(downloadUrl)
+                                        ).addOnFailureListener { e ->
+                                            Log.w(TAG, "Error updating document", e)
+                                            emitter.onError(e)
+                                        }
+                                } else {
+                                    firebaseFirestore.collection(userId).document(documentsName[1])
+                                        .collection(documentsName[2]).document(locationId)
+                                        .set(hashMapOf("1" to photoId.toString().replace("/", "").plus("*")
+                                            .plus(downloadUrl)))
+                                        .addOnFailureListener { e ->
+                                            Log.w(TAG, "Error updating document", e)
+                                            emitter.onError(e)
+                                        }
+                                }
+                            }.addOnCompleteListener {
+                                Log.d(TAG, "DocumentSnapshot successfully created!")
+                                emitter.onComplete()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(TAG, "Error updating document", e)
+                                emitter.onError(e)
+                            }
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error updating document", e)
                         emitter.onError(e)
                     }
-                firebaseFirestore.collection(userId).document(documentsName[1])
-                    .collection(documentsName[2])
-                    .get()
-                    .addOnSuccessListener { collection ->
-                        if (collection.documents[locationId.toInt() - 1].data != null) {
-                            firebaseFirestore.collection(userId).document(documentsName[1])
-                                .collection(documentsName[2]).document(locationId)
-                                .update(
-                                    collection.documents[locationId.toInt() - 1].data?.size?.plus(1)
-                                        .toString(),
-                                    photoId.toString().replace("/", "")
-                                ).addOnFailureListener { e ->
-                                    Log.w(TAG, "Error updating document", e)
-                                    emitter.onError(e)
-                                }
-                        } else {
-                            firebaseFirestore.collection(userId).document(documentsName[1])
-                                .collection(documentsName[2]).document(locationId)
-                                .set(hashMapOf("1" to photoId.toString().replace("/", "")))
-                                .addOnFailureListener { e ->
-                                    Log.w(TAG, "Error updating document", e)
-                                    emitter.onError(e)
-                                }
-                        }
-                    }.addOnCompleteListener {
-                        Log.d(TAG, "DocumentSnapshot successfully created!")
-                        emitter.onComplete()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w(TAG, "Error updating document", e)
-                        emitter.onError(e)
-                    }
+
             }
         }
     }

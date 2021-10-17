@@ -44,7 +44,7 @@ class LocationItemView
             locationsAdapter.notifyItemChanged(position, list)
             }
         val photosAdapter = PhotosAdapter(context, item.photos)
-        //binding.photosGrid.adapter = photosAdapter
+        binding.photosGrid.adapter = photosAdapter
         }
 }
 

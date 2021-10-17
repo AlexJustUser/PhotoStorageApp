@@ -72,22 +72,21 @@
 
                 </LinearLayout>
 
-                <GridView
-                    android:id="@+id/photos_grid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnWidth="100dp"
-                    android:gravity="center"
-                    android:horizontalSpacing="5dp"
-                    android:numColumns="3"
-                    android:stretchMode="columnWidth"
-                    tools:listitem="@layout/photo_location_item"
-                    android:verticalSpacing="35dp" >
-                </GridView>
-
             </LinearLayout>
 
         </LinearLayout>
+
+    <GridView
+        android:id="@+id/photos_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="100dp"
+        android:gravity="center"
+        android:horizontalSpacing="5dp"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        tools:listitem="@layout/photo_location_item"
+        android:verticalSpacing="35dp" />
 
     </LinearLayout>
 

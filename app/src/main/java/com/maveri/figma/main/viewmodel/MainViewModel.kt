@@ -86,7 +86,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
 
     private fun getPhotosInfo(userId: String, locations: Map<String, Any>){
         val locationItems = mutableListOf<Location>()
-        var index: Int = 0
+        var index = 0
         firebaseRepository.getPhotosInfo(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -96,7 +96,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                     locations.forEach{ loc->
                         val photosUrls = mutableListOf<String>()
                         photos[index].data?.values?.forEach {
-                                photosUrls.add(it as String)
+                                photosUrls.add((it as String).split("*").toTypedArray()[1])
                         }
                         locationItems.add(Location(loc.key, loc.value.toString(), photosUrls))
                         index ++
