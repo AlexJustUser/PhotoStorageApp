@@ -204,6 +204,54 @@ class FirebaseRepository @Inject constructor(
         }
     }
 
+    fun deletePhoto(userId: String, locationId: String, listForDelete: MutableList<String?>): Completable {
+        return Completable.create { emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            val deletingList = mutableListOf<String?>()
+                            val deletingIndexes = mutableListOf<String?>()
+                            document.data?.values?.forEach{ doc->
+                                listForDelete.forEach{
+                                    if((doc as String).split("*")[1] == it){
+                                        deletingList.add(doc)
+                                    }
+                                }
+                            }
+                            document.data?.forEach { doc ->
+                                deletingList.forEach{
+                                    if(doc.value == it){
+                                        deletingIndexes.add(doc.key)
+                                    }
+                                }
+                            }
+                            deletingIndexes.forEach{
+                                val updates = hashMapOf<String?, Any>(
+                                    it to FieldValue.delete())
+                                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
+                                    .update(updates).addOnFailureListener{ e ->
+                                        Log.w(TAG, "Error updating document", e)
+                                        emitter.onError(e)
+                                    }
+                            }
+                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                    }.addOnCompleteListener {
+                        Log.d(TAG, "DocumentSnapshot successfully created!")
+                        emitter.onComplete()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error updating document", e)
+                        emitter.onError(e)
+                    }
+            }
+        }
+    }
+
     fun getLocationsInfo(userId: String): Single<Map<String, Any>> {
         return Single.create { emitter ->
             firebaseAuth.currentUser?.let {

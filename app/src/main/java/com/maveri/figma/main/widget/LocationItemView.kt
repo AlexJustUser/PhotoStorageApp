@@ -20,12 +20,14 @@ class LocationItemView
     private lateinit var photosAdapter: PhotosAdapter
     private val deleteView: DeleteView? = deleteView
     private val deletingList = mutableListOf<String?>()
+    private var ietmId = ""
 
     init {
         layoutParams = binding.root.layoutParams
     }
 
     fun setItem(item: Location, position: Int, locationsAdapter: LocationsAdapter) {
+        ietmId = item.id
         binding.locationName.setText(item.name)
         binding.locationName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -56,12 +58,12 @@ class LocationItemView
 
     override fun insertToDelete(photoUrl: String?) {
         deletingList.add(photoUrl)
-        deleteView?.deletePhotos(deletingList)
+        deleteView?.deletePhotos(hashMapOf(ietmId to deletingList))
     }
 
     override fun removeToDelete(photoUrl: String?) {
         deletingList.remove(photoUrl)
-        deleteView?.deletePhotos(deletingList)
+        deleteView?.deletePhotos(hashMapOf(ietmId to deletingList))
     }
 
     override fun checkDeletePressed() : MutableList<String?>{
@@ -69,7 +71,7 @@ class LocationItemView
     }
 
     interface DeleteView{
-        fun deletePhotos(deleteList: MutableList<String?>)
+        fun deletePhotos(deleteList: HashMap<String, MutableList<String?>>)
     }
 }
 

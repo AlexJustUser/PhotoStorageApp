@@ -46,10 +46,10 @@ class LocationsAdapter(locationView: LocationView) : ListAdapter<Location, Locat
     interface LocationView{
         fun updateLocationName(locationInfo: ArrayList<String>)
         fun updateLocationPhoto(locationInfo: ArrayList<String>)
-        fun deletePhotos(deleteList: MutableList<String?>)
+        fun deletePhotos(deleteList: HashMap<String, MutableList<String?>>)
     }
 
-    override fun deletePhotos(deleteList: MutableList<String?>) {
+    override fun deletePhotos(deleteList: HashMap<String, MutableList<String?>>) {
         locationView?.deletePhotos(deleteList)
     }
 }
