@@ -118,7 +118,7 @@ class FirebaseRepository @Inject constructor(
     fun addNewPhoto(userId: String, photoId: Uri, locationId: String): Completable {
         return Completable.create { emitter ->
             firebaseAuth.currentUser?.let {
-                firebaseStorage.reference.child(photoId.toString()).putFile(photoId)
+                firebaseStorage.reference.child(photoId.toString().replace("/", "")).putFile(photoId)
                 .addOnCompleteListener {
                 Log.d(TAG, "DocumentSnapshot successfully created!")
             }
@@ -132,7 +132,7 @@ class FirebaseRepository @Inject constructor(
                         if (document != null) {
                             firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2]).update(
                                 (document.data?.size?.plus(1)).toString(),
-                                photoId.toString()
+                                photoId.toString().replace("/", "")
                             )
 
                             Log.d(TAG, "DocumentSnapshot data: ${document.data}")
