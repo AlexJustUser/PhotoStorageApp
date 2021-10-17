@@ -76,7 +76,7 @@
 
         </LinearLayout>
 
-    <GridView
+    <com.maveri.figma.main.widget.WrapGridView
         android:id="@+id/photos_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
         android:numColumns="3"
         android:stretchMode="columnWidth"
         tools:listitem="@layout/photo_location_item"
-        android:verticalSpacing="35dp" />
+        android:verticalSpacing="5dp" />
 
     </LinearLayout>
 
