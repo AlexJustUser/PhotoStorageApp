@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.maveri.figma.databinding.ActivityFullscreenImageBinding
 import com.squareup.picasso.Picasso
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FullscreenImageActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityFullscreenImageBinding

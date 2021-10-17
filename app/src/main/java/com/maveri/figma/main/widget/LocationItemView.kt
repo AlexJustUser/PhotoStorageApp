@@ -1,7 +1,6 @@
 package com.maveri.figma.main.widget
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,14 +8,18 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.maveri.figma.databinding.LocationItemBinding
 import android.widget.FrameLayout
+import com.maveri.figma.databinding.PhotoLocationItemBinding
 import com.maveri.figma.model.Location
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LocationItemView
-@JvmOverloads constructor(context: Context, attr: AttributeSet? = null, defStyleAttr: Int = 0) :
-    FrameLayout(context, attr, defStyleAttr) {
+@JvmOverloads constructor(context: Context, deleteView: DeleteView, attr: AttributeSet? = null, defStyleAttr: Int = 0) :
+    FrameLayout(context, attr, defStyleAttr), PhotosAdapter.PhotosView {
     private val binding = LocationItemBinding.inflate(LayoutInflater.from(context), this, true)
+    private lateinit var photosAdapter: PhotosAdapter
+    private val deleteView: DeleteView? = deleteView
+    private val deletingList = mutableListOf<String?>()
 
     init {
         layoutParams = binding.root.layoutParams
@@ -43,8 +46,30 @@ class LocationItemView
             list.add(item.id)
             locationsAdapter.notifyItemChanged(position, list)
             }
-        val photosAdapter = PhotosAdapter(context, item.photos)
+        photosAdapter = PhotosAdapter(context, this, item.photos)
         binding.photosGrid.adapter = photosAdapter
         }
+
+    override fun notifyAllElements() {
+        photosAdapter.notifyDataSetChanged()
+    }
+
+    override fun insertToDelete(photoUrl: String?) {
+        deletingList.add(photoUrl)
+        deleteView?.deletePhotos(deletingList)
+    }
+
+    override fun removeToDelete(photoUrl: String?) {
+        deletingList.remove(photoUrl)
+        deleteView?.deletePhotos(deletingList)
+    }
+
+    override fun checkDeletePressed() : MutableList<String?>{
+        return deletingList
+    }
+
+    interface DeleteView{
+        fun deletePhotos(deleteList: MutableList<String?>)
+    }
 }
 

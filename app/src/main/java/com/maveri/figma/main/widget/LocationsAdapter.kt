@@ -1,18 +1,16 @@
 package com.maveri.figma.main.widget
 
-import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.maveri.figma.main.view.MainActivity
 import com.maveri.figma.model.Location
 
-class LocationsAdapter(locationView: LocationView) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
+class LocationsAdapter(locationView: LocationView) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK), LocationItemView.DeleteView {
 
     private val locationView: LocationView? = locationView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
-        return LocationViewHolder(LocationItemView(parent.context))
+        return LocationViewHolder(LocationItemView(parent.context, this))
 
     }
 
@@ -48,5 +46,10 @@ class LocationsAdapter(locationView: LocationView) : ListAdapter<Location, Locat
     interface LocationView{
         fun updateLocationName(locationInfo: ArrayList<String>)
         fun updateLocationPhoto(locationInfo: ArrayList<String>)
+        fun deletePhotos(deleteList: MutableList<String?>)
+    }
+
+    override fun deletePhotos(deleteList: MutableList<String?>) {
+        locationView?.deletePhotos(deleteList)
     }
 }

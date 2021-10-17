@@ -6,13 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageButton
 import android.widget.ImageView
 import com.maveri.figma.R
 import com.squareup.picasso.Picasso
 
-class PhotosAdapter constructor(private val context: Context, private val images: MutableList<String>?) :  BaseAdapter() {
+class PhotosAdapter constructor(private val context: Context, photosView: PhotosView, private val images: MutableList<String>?) :  BaseAdapter() {
 
     private var isDeleting: Boolean = false
+    private val photosView: PhotosView? = photosView
+    private lateinit var deletePhotoButton: ImageButton
 
     override fun getCount(): Int {
         return images!!.size
@@ -35,13 +38,29 @@ class PhotosAdapter constructor(private val context: Context, private val images
         }
 
         val card = view!!.findViewById<ImageView>(R.id.photo_card)
-        val deletePhotoButton = view!!.findViewById<ImageView>(R.id.delete_photo_button)
+        deletePhotoButton = view!!.findViewById<ImageView>(R.id.delete_photo_button) as ImageButton
+
+        if(isDeleting){
+            deletePhotoButton.visibility = View.VISIBLE
+        }
 
 
         card.setOnClickListener {
-            val intent = Intent(parent?.context, FullscreenImageActivity::class.java)
-            intent.putExtra("imageUrl", images?.get(position))
-            parent?.context?.startActivity(intent)
+            if(isDeleting){
+                deletePhotoButton = view!!.findViewById<ImageView>(R.id.delete_photo_button) as ImageButton
+                    if(photosView?.checkDeletePressed()?.contains(images?.get(position)) == true){
+                        deletePhotoButton.setImageDrawable(null)
+                        photosView?.removeToDelete(images?.get(position))
+                    }else{
+                        deletePhotoButton.setImageDrawable(context.resources.getDrawable(R.drawable.ic_cross))
+                        photosView?.insertToDelete(images?.get(position))
+                    }
+
+            }else {
+                val intent = Intent(parent?.context, FullscreenImageActivity::class.java)
+                intent.putExtra("imageUrl", images?.get(position))
+                parent?.context?.startActivity(intent)
+            }
 
 //            view.visibility = if (view.visibility == View.VISIBLE){
 //                View.INVISIBLE
@@ -51,7 +70,8 @@ class PhotosAdapter constructor(private val context: Context, private val images
         }
 
         card.setOnLongClickListener{
-            deletePhotoButton.visibility = View.VISIBLE
+            isDeleting = true
+            photosView?.notifyAllElements()
             true
         }
 
@@ -62,8 +82,17 @@ class PhotosAdapter constructor(private val context: Context, private val images
         return view
     }
 
-}
+    override fun notifyDataSetChanged() {
+        super.notifyDataSetChanged()
+//        if (deletePhotoButton.visibility != View.VISIBLE){
+//            deletePhotoButton.visibility = View.VISIBLE
+//        }
+    }
 
-interface PhotoView{
-    fun setFullScreenImage(urlImage: String)
+    interface PhotosView{
+        fun notifyAllElements()
+        fun insertToDelete(photoUrl: String?)
+        fun removeToDelete(photoUrl: String?)
+        fun checkDeletePressed() : MutableList<String?>
+    }
 }
