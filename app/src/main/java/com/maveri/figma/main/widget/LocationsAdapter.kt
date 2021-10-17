@@ -1,11 +1,13 @@
 package com.maveri.figma.main.widget
 
+import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.maveri.figma.main.view.MainActivity
 import com.maveri.figma.model.Location
 
-class LocationsAdapter constructor(locationView: LocationView) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
+class LocationsAdapter(locationView: LocationView) : ListAdapter<Location, LocationViewHolder>(DIFF_CALLBACK) {
 
     private val locationView: LocationView? = locationView
 

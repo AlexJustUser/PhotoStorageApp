@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/drawable/layout_item_shadow.xml" value="0.2140625" />
         <entry key="app/src/main/res/drawable/layout_roundcorner.xml" value="0.36615384615384616" />
         <entry key="app/src/main/res/drawable/layout_string_roundcorner.xml" value="0.23125" />
+        <entry key="app/src/main/res/layout/activity_fullscreen_image.xml" value="0.21510416666666668" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.43020833333333336" />
         <entry key="app/src/main/res/layout/location_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/photo_location_item.xml" value="0.25" />
