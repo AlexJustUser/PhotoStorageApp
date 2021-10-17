@@ -1,6 +1,7 @@
 package com.maveri.figma.main.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -84,7 +85,6 @@ class MainViewModel @Inject constructor(application: Application, private val fi
 
     private fun getPhotosInfo(userId: String, locations: Map<String, Any>){
         val locationItems = mutableListOf<Location>()
-
         firebaseRepository.getPhotosInfo(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -92,13 +92,11 @@ class MainViewModel @Inject constructor(application: Application, private val fi
 
                 override fun onSuccess(photos: Map<String, Any>) {
                     locations.forEach{ loc->
-                        val photoUrls = mutableListOf<String>()
+                        val photosUrls = mutableListOf<String>()
                         photos.forEach {
-                            if((it.value as? Array<*>)?.contains(loc.key) == true){
-                                photoUrls?.add(it.key)
-                            }
+                                photosUrls.add(it.value as String)
                         }
-                        locationItems?.add(Location(loc.key, loc.value.toString(), photoUrls))
+                            locationItems.add(Location(loc.key, loc.value.toString(), photosUrls))
                     }
                     viewState.value = MainViewState.State(locations = locationItems)
                 }
@@ -107,6 +105,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                     Log.e(TAG, e.stackTraceToString())
                 }
             })
+
     }
 
     private fun getStreetName(userId: String) {
@@ -184,6 +183,25 @@ class MainViewModel @Inject constructor(application: Application, private val fi
         viewModelScope.launch(Dispatchers.IO) {
             val userId = roomRepository.readAllUsers()[0].firebaseId
             firebaseRepository.addNewLocation(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : DisposableCompletableObserver() {
+                    override fun onComplete() {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.e(TAG, e.stackTraceToString())
+                    }
+
+                })
+        }
+    }
+
+    fun addNewPhoto(photoId: Uri, locationId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = roomRepository.readAllUsers()[0].firebaseId
+            firebaseRepository.addNewPhoto(userId, photoId, locationId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : DisposableCompletableObserver() {

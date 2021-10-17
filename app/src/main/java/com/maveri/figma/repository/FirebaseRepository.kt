@@ -1,9 +1,11 @@
 package com.maveri.figma.repository;
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.maveri.figma.model.Location
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -12,6 +14,7 @@ import javax.inject.Inject
 
 class FirebaseRepository @Inject constructor(
     private val firebaseFirestore: FirebaseFirestore,
+    private val firebaseStorage: FirebaseStorage,
     private val firebaseAuth: FirebaseAuth
 ) {
 
@@ -19,7 +22,7 @@ class FirebaseRepository @Inject constructor(
         const val TAG = "FirebaseRepository"
     }
 
-    private val documentsName = arrayOf("StreetName", "LocationsName", "PhotosName")
+    private val documentsName = arrayOf("StreetName", "LocationsName", "Photos")
 
     fun signInAnonymously(): Completable {
         return Completable.create { emitter ->
@@ -96,14 +99,50 @@ class FirebaseRepository @Inject constructor(
                         hashMapOf("1" to "Название локации")
                     )
                     batch.set(
-                        firebaseFirestore.collection(userId).document(documentsName[2]),
-                        HashMap<String, String>()
+                        firebaseFirestore.collection(userId).document(documentsName[1])
+                            .collection(documentsName[2]).document(documentsName[2]), HashMap<String, String>()
                     )
 
                 }.addOnCompleteListener {
                     Log.d(TAG, "DocumentSnapshot successfully created!")
                     emitter.onSuccess(userId)
                 }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error updating document", e)
+                        emitter.onError(e)
+                    }
+            }
+        }
+    }
+
+    fun addNewPhoto(userId: String, photoId: Uri, locationId: String): Completable {
+        return Completable.create { emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseStorage.reference.child(photoId.toString()).putFile(photoId)
+                .addOnCompleteListener {
+                Log.d(TAG, "DocumentSnapshot successfully created!")
+            }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error updating document", e)
+                    emitter.onError(e)
+                }
+                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2])
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2]).update(
+                                (document.data?.size?.plus(1)).toString(),
+                                photoId.toString()
+                            )
+
+                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                    }.addOnCompleteListener {
+                        Log.d(TAG, "DocumentSnapshot successfully created!")
+                        emitter.onComplete()
+                    }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error updating document", e)
                         emitter.onError(e)
@@ -164,7 +203,7 @@ class FirebaseRepository @Inject constructor(
     fun getPhotosInfo(userId: String): Single<Map<String, Any>> {
         return Single.create { emitter ->
             firebaseAuth.currentUser?.let {
-                firebaseFirestore.collection(userId).document(documentsName[2])
+                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2])
                     .get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
