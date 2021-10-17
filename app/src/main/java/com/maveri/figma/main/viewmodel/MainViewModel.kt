@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.DocumentSnapshot
 import com.maveri.figma.model.Location
 import com.maveri.figma.model.User
 import com.maveri.figma.repository.FirebaseRepository
@@ -85,18 +86,20 @@ class MainViewModel @Inject constructor(application: Application, private val fi
 
     private fun getPhotosInfo(userId: String, locations: Map<String, Any>){
         val locationItems = mutableListOf<Location>()
+        var index: Int = 0
         firebaseRepository.getPhotosInfo(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : DisposableSingleObserver<Map<String, Any>>() {
+            .subscribe(object : DisposableSingleObserver<List<DocumentSnapshot>>() {
 
-                override fun onSuccess(photos: Map<String, Any>) {
+                override fun onSuccess(photos: List<DocumentSnapshot>) {
                     locations.forEach{ loc->
                         val photosUrls = mutableListOf<String>()
-                        photos.forEach {
-                                photosUrls.add(it.value as String)
+                        photos[index].data?.values?.forEach {
+                                photosUrls.add(it as String)
                         }
-                            locationItems.add(Location(loc.key, loc.value.toString(), photosUrls))
+                        locationItems.add(Location(loc.key, loc.value.toString(), photosUrls))
+                        index ++
                     }
                     viewState.value = MainViewState.State(locations = locationItems)
                 }

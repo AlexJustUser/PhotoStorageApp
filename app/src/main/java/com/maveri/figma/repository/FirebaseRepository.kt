@@ -3,6 +3,7 @@ package com.maveri.figma.repository;
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -100,7 +101,7 @@ class FirebaseRepository @Inject constructor(
                     )
                     batch.set(
                         firebaseFirestore.collection(userId).document(documentsName[1])
-                            .collection(documentsName[2]).document(documentsName[2]), HashMap<String, String>()
+                            .collection(documentsName[2]).document("1"), HashMap<String, String>()
                     )
 
                 }.addOnCompleteListener {
@@ -118,26 +119,38 @@ class FirebaseRepository @Inject constructor(
     fun addNewPhoto(userId: String, photoId: Uri, locationId: String): Completable {
         return Completable.create { emitter ->
             firebaseAuth.currentUser?.let {
-                firebaseStorage.reference.child(photoId.toString().replace("/", "")).putFile(photoId)
-                .addOnCompleteListener {
-                Log.d(TAG, "DocumentSnapshot successfully created!")
-            }
-                .addOnFailureListener { e ->
-                    Log.w(TAG, "Error updating document", e)
-                    emitter.onError(e)
-                }
-                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2])
+                firebaseStorage.reference.child(photoId.toString().replace("/", ""))
+                    .putFile(photoId)
+                    .addOnCompleteListener {
+                        Log.d(TAG, "DocumentSnapshot successfully created!")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error updating document", e)
+                        emitter.onError(e)
+                    }
+                firebaseFirestore.collection(userId).document(documentsName[1])
+                    .collection(documentsName[2])
                     .get()
-                    .addOnSuccessListener { document ->
-                        if (document != null) {
-                            firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2]).update(
-                                (document.data?.size?.plus(1)).toString(),
-                                photoId.toString().replace("/", "")
-                            )
-
-                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                    .addOnSuccessListener { collection ->
+                        if (collection.documents[locationId.toInt() - 1].data != null) {
+                            firebaseFirestore.collection(userId).document(documentsName[1])
+                                .collection(documentsName[2]).document(locationId)
+                                .update(
+                                    collection.documents[locationId.toInt() - 1].data?.size?.plus(1)
+                                        .toString(),
+                                    photoId.toString().replace("/", "")
+                                ).addOnFailureListener { e ->
+                                    Log.w(TAG, "Error updating document", e)
+                                    emitter.onError(e)
+                                }
                         } else {
-                            Log.d(TAG, "No such document")
+                            firebaseFirestore.collection(userId).document(documentsName[1])
+                                .collection(documentsName[2]).document(locationId)
+                                .set(hashMapOf("1" to photoId.toString().replace("/", "")))
+                                .addOnFailureListener { e ->
+                                    Log.w(TAG, "Error updating document", e)
+                                    emitter.onError(e)
+                                }
                         }
                     }.addOnCompleteListener {
                         Log.d(TAG, "DocumentSnapshot successfully created!")
@@ -162,6 +175,11 @@ class FirebaseRepository @Inject constructor(
                                 (document.data?.size?.plus(1)).toString(),
                                 "Название локации"
                             )
+
+                            firebaseFirestore.collection(userId).document(documentsName[1])
+                                .collection(documentsName[2])
+                                .document((document.data?.size?.plus(1)).toString())
+                                .set(HashMap<String, String>())
 
                             Log.d(TAG, "DocumentSnapshot data: ${document.data}")
                         } else {
@@ -200,15 +218,16 @@ class FirebaseRepository @Inject constructor(
         }
     }
 
-    fun getPhotosInfo(userId: String): Single<Map<String, Any>> {
+    fun getPhotosInfo(userId: String): Single<List<DocumentSnapshot>> {
         return Single.create { emitter ->
             firebaseAuth.currentUser?.let {
-                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(documentsName[2])
+                firebaseFirestore.collection(userId).document(documentsName[1])
+                    .collection(documentsName[2])
                     .get()
-                    .addOnSuccessListener { document ->
-                        if (document != null) {
-                            emitter.onSuccess(document.data)
-                            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                    .addOnSuccessListener { collection ->
+                        if (collection != null) {
+                            emitter.onSuccess(collection.documents)
+                            Log.d(TAG, "DocumentSnapshot data: ${collection.documents}")
                         } else {
                             Log.d(TAG, "No such document")
                         }

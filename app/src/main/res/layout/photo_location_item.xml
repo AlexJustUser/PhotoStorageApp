@@ -4,14 +4,11 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.cardview.widget.CardView
+    <ImageView
         android:id="@+id/photo_card"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="0dp"
-        app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true"
+        android:adjustViewBounds="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -33,6 +30,6 @@
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </ImageView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
