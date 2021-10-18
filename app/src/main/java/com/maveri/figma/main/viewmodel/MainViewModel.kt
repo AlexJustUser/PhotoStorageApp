@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.maveri.figma.model.Location
@@ -13,6 +14,7 @@ import com.maveri.figma.repository.FirebaseRepository
 import com.maveri.figma.repository.RoomRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableCompletableObserver
 import io.reactivex.rxjava3.observers.DisposableSingleObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -62,10 +64,20 @@ class MainViewModel @Inject constructor(application: Application, private val fi
             if(users.isEmpty()){
                 setStreetInfo()
             }else{
-                getStreetName(users[0].firebaseId)
-                getLocationsInfo(users[0].firebaseId)
+//                getStreetName(users[0].firebaseId)
+//                getLocationsInfo(users[0].firebaseId)
+                checkUpdates(users[0].firebaseId)
             }
         }
+    }
+
+     private fun checkUpdates(userId: String){
+            firebaseRepository.checkUpdates(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(){
+                    getLocationsInfo(userId)
+                }
     }
 
     private fun getLocationsInfo(userId: String){
