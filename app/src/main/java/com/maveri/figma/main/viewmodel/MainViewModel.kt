@@ -61,11 +61,9 @@ class MainViewModel @Inject constructor(application: Application, private val fi
         viewModelScope.launch(Dispatchers.IO) {
             //roomRepository.delUsers()
             val users: List<User> = roomRepository.readAllUsers()
-            if(users.isEmpty()){
+            if(users.isEmpty()) {
                 setStreetInfo()
             }else{
-//                getStreetName(users[0].firebaseId)
-//                getLocationsInfo(users[0].firebaseId)
                 checkUpdates(users[0].firebaseId)
             }
         }
@@ -76,6 +74,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(){
+                    getStreetName(userId)
                     getLocationsInfo(userId)
                 }
     }
@@ -148,6 +147,7 @@ class MainViewModel @Inject constructor(application: Application, private val fi
                 override fun onSuccess(userId: String) {
                     val user: User = User(0, userId)
                     saveUserId(user)
+                    checkUpdates(userId)
                 }
 
                 override fun onError(e: Throwable) {
