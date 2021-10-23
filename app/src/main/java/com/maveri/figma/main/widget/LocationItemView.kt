@@ -11,6 +11,8 @@ import android.widget.FrameLayout
 import com.maveri.figma.databinding.PhotoLocationItemBinding
 import com.maveri.figma.model.Location
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LocationItemView
@@ -34,7 +36,8 @@ class LocationItemView
                 val list = arrayListOf<String>()
                 list.add(item.id)
                 list.add(binding.locationName.text.toString())
-                locationsAdapter.notifyItemChanged(position, list)
+                binding.locationName.post { locationsAdapter.notifyItemChanged(position, list) }
+
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -46,6 +49,7 @@ class LocationItemView
         binding.addPhotoButton.setOnClickListener{
             val list = arrayListOf<String>()
             list.add(item.id)
+            binding.addPhotoButton.post { locationsAdapter.notifyItemChanged(position, list) }
             locationsAdapter.notifyItemChanged(position, list)
             }
         photosAdapter = PhotosAdapter(context, this, item.photos)
