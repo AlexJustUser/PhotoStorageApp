@@ -61,12 +61,6 @@ class PhotosAdapter constructor(private val context: Context, photosView: Photos
                 intent.putExtra("imageUrl", images?.get(position))
                 parent?.context?.startActivity(intent)
             }
-
-//            view.visibility = if (view.visibility == View.VISIBLE){
-//                View.INVISIBLE
-//            } else{
-//                View.VISIBLE
-//            }
         }
 
         card.setOnLongClickListener{
@@ -82,12 +76,7 @@ class PhotosAdapter constructor(private val context: Context, photosView: Photos
         return view
     }
 
-    override fun notifyDataSetChanged() {
-        super.notifyDataSetChanged()
-//        if (deletePhotoButton.visibility != View.VISIBLE){
-//            deletePhotoButton.visibility = View.VISIBLE
-//        }
-    }
+
 
     interface PhotosView{
         fun notifyAllElements()

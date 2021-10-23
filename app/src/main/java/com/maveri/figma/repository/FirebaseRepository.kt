@@ -128,9 +128,14 @@ class FirebaseRepository @Inject constructor(
                                 if(it.isComplete) {
                                     firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).get()
                                         .addOnSuccessListener { collection ->
-                                            if (collection.documents[locationId.toInt() - 1].data != null) {
+                                            if (!collection.documents[locationId.toInt() - 1].data.isNullOrEmpty()) {
+                                                val keysValues = mutableListOf<Int>()
+                                                collection.documents[locationId.toInt() - 1].data?.keys?.forEach{
+                                                    keysValues.add(it.toInt())
+                                                }
                                                 firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
-                                                    .update(collection.documents[locationId.toInt() - 1].data?.keys?.last()?.toInt()?.plus(1).toString(),
+                                                    .update(
+                                                        keysValues.maxOrNull()?.plus(1).toString(),
                                                         photoId.toString().replace("/", "").plus("*").plus(it.result.toString()))
                                                     .addOnFailureListener { e ->
                                                         emitter.onError(e)

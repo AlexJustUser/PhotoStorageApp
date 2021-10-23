@@ -39,7 +39,7 @@ class LocationsAdapter(locationView: LocationView) : ListAdapter<Location, Locat
                 oldItem.id == newItem.id
 
             override fun areContentsTheSame(oldItem: Location, newItem: Location) =
-                oldItem.id == newItem.id
+                oldItem.photos == newItem.photos
         }
     }
 
