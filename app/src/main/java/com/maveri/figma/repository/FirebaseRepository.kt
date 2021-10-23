@@ -122,27 +122,29 @@ class FirebaseRepository @Inject constructor(
                     .addOnFailureListener{
                         emitter.onError(it)
                     }
-                firebaseStorage.reference.child(photoId.toString().replace("/", "")).downloadUrl
-                    .addOnCompleteListener {
-                        if(it.isComplete) {
-                            firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).get()
-                                .addOnSuccessListener { collection ->
-                                    if (collection.documents[locationId.toInt() - 1].data != null) {
-                                        firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
-                                            .update(collection.documents[locationId.toInt() - 1].data?.size?.plus(1).toString(),
-                                                photoId.toString().replace("/", "").plus("*").plus(it.result.toString()))
-                                            .addOnFailureListener { e ->
-                                                emitter.onError(e)
+                    .addOnCompleteListener{
+                        firebaseStorage.reference.child(photoId.toString().replace("/", "")).downloadUrl
+                            .addOnCompleteListener {
+                                if(it.isComplete) {
+                                    firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).get()
+                                        .addOnSuccessListener { collection ->
+                                            if (collection.documents[locationId.toInt() - 1].data != null) {
+                                                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
+                                                    .update(collection.documents[locationId.toInt() - 1].data?.keys?.last()?.toInt()?.plus(1).toString(),
+                                                        photoId.toString().replace("/", "").plus("*").plus(it.result.toString()))
+                                                    .addOnFailureListener { e ->
+                                                        emitter.onError(e)
+                                                    }
+                                            } else {
+                                                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
+                                                    .set(hashMapOf("1" to photoId.toString().replace("/", "").plus("*").plus(it.result.toString())))
+                                                    .addOnFailureListener { e ->
+                                                        emitter.onError(e)
+                                                    }
                                             }
-                                    } else {
-                                        firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
-                                            .set(hashMapOf("1" to photoId.toString().replace("/", "").plus("*").plus(it.result.toString())))
-                                            .addOnFailureListener { e ->
-                                                emitter.onError(e)
-                                            }
-                                    }
+                                        }
                                 }
-                        }
+                            }
                     }
             }
         }
@@ -297,21 +299,10 @@ class FirebaseRepository @Inject constructor(
     fun checkUpdates(userId: String) : Observable<String?>{
         return Observable.create { emitter ->
             firebaseAuth.currentUser?.let {
-                firebaseFirestore.collection(userId)
-                    .addSnapshotListener(
-                        EventListener<QuerySnapshot?> { snapshot, e ->
-                            if (e != null) {
-                                Log.w(TAG, "Listen failed.", e)
-                                emitter.onError(e)
-                                return@EventListener
-                            }
-                            if (snapshot != null) {
-                                emitter.onNext("")
-                                //Log.d(TAG, snapshot.data!!["status"].toString())
-                            } else {
-                                Log.d(TAG, "Current data: null")
-                            }
-                        })
+                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2])
+                    .addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, e ->
+                        emitter.onNext("")
+                    }
             }
         }
     }
