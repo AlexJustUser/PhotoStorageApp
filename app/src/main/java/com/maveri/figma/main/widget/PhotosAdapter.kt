@@ -44,7 +44,6 @@ class PhotosAdapter constructor(private val context: Context, photosView: Photos
             deletePhotoButton.visibility = View.VISIBLE
         }
 
-
         card.setOnClickListener {
             if(isDeleting){
                 deletePhotoButton = view!!.findViewById<ImageView>(R.id.delete_photo_button) as ImageButton

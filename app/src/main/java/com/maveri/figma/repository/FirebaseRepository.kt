@@ -162,14 +162,17 @@ class FirebaseRepository @Inject constructor(
                     .get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
+                            val keysValues = mutableListOf<Int>()
+                            document.data?.keys?.forEach{
+                                keysValues.add(it.toInt())
+                            }
                             firebaseFirestore.collection(userId).document(documentsName[1]).update(
-                                (document.data?.size?.plus(1)).toString(),
+                                keysValues.maxOrNull()?.plus(1).toString(),
                                 "Название локации"
                             )
-
                             firebaseFirestore.collection(userId).document(documentsName[1])
                                 .collection(documentsName[2])
-                                .document((document.data?.size?.plus(1)).toString())
+                                .document(keysValues.maxOrNull()?.plus(1).toString())
                                 .set(HashMap<String, String>())
 
                             Log.d(TAG, "DocumentSnapshot data: ${document.data}")
@@ -229,6 +232,33 @@ class FirebaseRepository @Inject constructor(
                         emitter.onComplete()
                     }
                     .addOnFailureListener { e ->
+                        Log.w(TAG, "Error updating document", e)
+                        emitter.onError(e)
+                    }
+            }
+        }
+    }
+
+    fun deleteLocation(userId: String, locationId: String): Completable {
+        return Completable.create { emitter ->
+            firebaseAuth.currentUser?.let {
+                firebaseFirestore.collection(userId).document(documentsName[1]).collection(documentsName[2]).document(locationId)
+                    .delete()
+                    .addOnCompleteListener {
+                        Log.d(TAG, "DocumentSnapshot successfully created!")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error updating document", e)
+                        emitter.onError(e)
+                    }
+                val updates = hashMapOf<String?, Any>(
+                    locationId to FieldValue.delete())
+                firebaseFirestore.collection(userId).document(documentsName[1]).update(updates)
+                    .addOnCompleteListener {
+                        Log.d(TAG, "DocumentSnapshot successfully created!")
+                        emitter.onComplete()
+                    }
+                    .addOnFailureListener{ e ->
                         Log.w(TAG, "Error updating document", e)
                         emitter.onError(e)
                     }

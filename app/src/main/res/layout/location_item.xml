@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="wrap_content">
 
     <LinearLayout
-    android:id="@+id/item_location"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/layout_item_shadow"
-    android:orientation="vertical"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+        android:id="@+id/item_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/layout_item_shadow"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,8 +35,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_16"
                 android:layout_marginLeft="@dimen/margin_16"
+                android:layout_marginTop="@dimen/margin_16"
                 android:layout_marginRight="@dimen/margin_16"
                 android:layout_marginBottom="@dimen/margin_16"
                 android:background="@drawable/layout_string_roundcorner"
@@ -63,11 +63,11 @@
                         android:id="@+id/add_photo_button"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:scaleType="centerCrop"
                         android:layout_marginTop="@dimen/margin_8"
                         android:layout_marginRight="@dimen/margin_8"
-                        android:padding="1dp"
                         android:background="@null"
+                        android:padding="1dp"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/ic_plus" />
 
                 </LinearLayout>
@@ -76,19 +76,65 @@
 
         </LinearLayout>
 
-    <com.maveri.figma.main.widget.WrapGridView
-        android:id="@+id/photos_grid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnWidth="100dp"
-        android:gravity="center"
-        android:horizontalSpacing="5dp"
-        android:numColumns="3"
-        android:stretchMode="columnWidth"
-        tools:listitem="@layout/photo_location_item"
-        android:verticalSpacing="5dp" />
+        <com.maveri.figma.main.widget.WrapGridView
+            android:id="@+id/photos_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="100dp"
+            android:gravity="center"
+            android:horizontalSpacing="5dp"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="5dp"
+            tools:listitem="@layout/photo_location_item" />
 
     </LinearLayout>
+
+    <com.chauthai.swipereveallayout.SwipeRevealLayout
+        android:id="@+id/swipe_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_50"
+        app:dragEdge="right"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mode="same_level">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="@dimen/margin_50"
+            android:gravity="right"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/delete_location_button"
+                android:layout_width="80dp"
+                android:layout_height="100dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="@dimen/margin_8"
+                android:layout_marginRight="@dimen/margin_8"
+                android:background="@drawable/button_delete_icon_roundcorner"
+                android:padding="1dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_delete" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="@dimen/margin_50"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </com.chauthai.swipereveallayout.SwipeRevealLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
